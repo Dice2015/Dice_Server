@@ -17,7 +17,6 @@ public class ClientConnection extends Thread {
 	private OutputStream outputStream;
 	private OutputStreamWriter outputStreamWriter;
 
-
 	private Main main;
 	public ClientConnection(Socket socket, Main main) throws IOException 
 	{
@@ -45,13 +44,12 @@ public class ClientConnection extends Thread {
 			//TODO handler logic
 		}
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 	
 	public void sendMessage(String msg) throws InterruptedException{
-		lBQsend.put(msg);
+		sendQueue.put(msg);
 	}
 	
 	private void send(String msg) throws IOException
@@ -61,7 +59,7 @@ public class ClientConnection extends Thread {
 	}
 	
 	//eingabeQueue
-	private LinkedBlockingQueue <String> lBQsend = new LinkedBlockingQueue<String>(); 
+	private LinkedBlockingQueue <String> sendQueue = new LinkedBlockingQueue<String>(); 
 
 
 	private Thread sendThread = new Thread(){
@@ -70,7 +68,7 @@ public class ClientConnection extends Thread {
 			while(socket.isConnected()){
 				String s;
 				try {
-					s = lBQsend.take();
+					s = sendQueue.take();
 				    send(s);
 				} catch (Exception e) {
 					// TODO Auto-generated catch block

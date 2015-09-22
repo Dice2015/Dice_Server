@@ -5,9 +5,12 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
 import network.ClientConnection;
-import Logic.handler.Handler;
-import Logic.handler.loginHandler;
+import network.handler.Handler;
+import network.handler.LoginHandler;
 
 public class Main {
 	
@@ -23,7 +26,7 @@ public class Main {
 	}
 	
 	public Main(){
-		handlerChain.add(new loginHandler());
+		handlerChain.add(new LoginHandler());
 		logicThread.start();
 		try {
 			ServerSocket serverSocket = new ServerSocket(12345);
@@ -31,6 +34,7 @@ public class Main {
 			{
 				Socket socket = serverSocket.accept();
 				ClientConnection cc = new ClientConnection(socket, Main.this);
+				cc.start();
 				connections.add(cc);
 			}
 			serverSocket.close();
@@ -43,12 +47,12 @@ public class Main {
 		return connections;
 	}
 	
-	private LinkedBlockingQueue <String> lBQread = new LinkedBlockingQueue<String>();
+	private LinkedBlockingQueue <String> readQueue = new LinkedBlockingQueue<String>();
 
 	public void addtoLogicThread(String read) {
 		// TODO Auto-generated method stub
 		try {
-			lBQread.put(read);
+			readQueue.put(read);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -59,12 +63,14 @@ public class Main {
 	private Thread logicThread = new Thread(){
 		@Override
 		public void run(){
-			String s="";
+			String msg= null;
 			try {
+				JSONParser parser = new JSONParser();
 			while(running ){
-					s = lBQread.take();
+					msg = readQueue.take();
+					JSONObject jsonMsg = (JSONObject) parser.parse(msg);
 					for(Handler h : handlerChain){
-						if(h.handle()){
+						if(h.handle(jsonMsg)){
 							break;
 						}
 					}

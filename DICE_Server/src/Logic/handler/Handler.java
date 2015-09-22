@@ -1,6 +1,6 @@
 package Logic.handler;
 
-interface Handler {
+public interface Handler {
 
 	boolean handle();
 }

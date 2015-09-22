@@ -9,7 +9,6 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import network.handler.MessageHandler;
 import start.Main;
 
 public class ClientConnection extends Thread {
@@ -17,10 +16,12 @@ public class ClientConnection extends Thread {
 	private Socket socket;
 	private OutputStream outputStream;
 	private OutputStreamWriter outputStreamWriter;
-	private ArrayList<MessageHandler> handlerChain = new ArrayList<>();
 
+
+	private Main main;
 	public ClientConnection(Socket socket, Main main) throws IOException 
 	{
+		this.main = main;
 		this.socket = socket;		
 		outputStream = socket.getOutputStream();
 		outputStreamWriter = new OutputStreamWriter(outputStream);
@@ -39,7 +40,7 @@ public class ClientConnection extends Thread {
 			read = bR.readLine();
 			while (socket.isConnected() && read != null )
 		{
-				
+				main.addtoLogicThread(read);
 				read = bR.readLine();
 			//TODO handler logic
 		}
@@ -50,7 +51,7 @@ public class ClientConnection extends Thread {
 	}
 	
 	public void sendMessage(String msg) throws InterruptedException{
-		lBQ.put(msg);
+		lBQsend.put(msg);
 	}
 	
 	private void send(String msg) throws IOException
@@ -60,7 +61,8 @@ public class ClientConnection extends Thread {
 	}
 	
 	//eingabeQueue
-	private LinkedBlockingQueue <String> lBQ = new LinkedBlockingQueue<String>(); 
+	private LinkedBlockingQueue <String> lBQsend = new LinkedBlockingQueue<String>(); 
+
 
 	private Thread sendThread = new Thread(){
 		@Override
@@ -68,7 +70,7 @@ public class ClientConnection extends Thread {
 			while(socket.isConnected()){
 				String s;
 				try {
-					s = lBQ.take();
+					s = lBQsend.take();
 				    send(s);
 				} catch (Exception e) {
 					// TODO Auto-generated catch block

@@ -6,8 +6,10 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import network.handler.MessageHandler;
 import start.Main;
 
 public class ClientConnection extends Thread {
@@ -15,12 +17,15 @@ public class ClientConnection extends Thread {
 	private Socket socket;
 	private OutputStream outputStream;
 	private OutputStreamWriter outputStreamWriter;
+	private ArrayList<MessageHandler> handlerChain = new ArrayList<>();
 
 	public ClientConnection(Socket socket, Main main) throws IOException 
 	{
 		this.socket = socket;		
 		outputStream = socket.getOutputStream();
 		outputStreamWriter = new OutputStreamWriter(outputStream);
+		this.setDaemon(true);
+		this.setName(this.getClass().getSimpleName());
 	}
 	
 	@Override

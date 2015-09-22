@@ -16,10 +16,10 @@ public class ClientConnection extends Thread {
 	private OutputStream outputStream;
 	private OutputStreamWriter outputStreamWriter;
 
-	public ClientConnection(Socket s, Main main) throws IOException 
+	public ClientConnection(Socket socket, Main main) throws IOException 
 	{
-		this.socket = s;		
-		outputStream = s.getOutputStream();
+		this.socket = socket;		
+		outputStream = socket.getOutputStream();
 		outputStreamWriter = new OutputStreamWriter(outputStream);
 	}
 	
@@ -50,7 +50,7 @@ public class ClientConnection extends Thread {
 	
 	private void send(String msg) throws IOException
 	{
-		outputStreamWriter.write(msg);
+		outputStreamWriter.write(msg + "\n");
 		outputStreamWriter.flush();
 	}
 	

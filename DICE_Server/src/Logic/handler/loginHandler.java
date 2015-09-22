@@ -1,6 +1,6 @@
 package Logic.handler;
 
-public class loginHandler implements handler{
+public class LoginHandler implements Handler{
 
 	@Override
 	public boolean handle() {

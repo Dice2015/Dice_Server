@@ -8,6 +8,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import Logic.User;
 import network.ClientConnection;
 import network.handler.Handler;
 import network.handler.LoginHandler;
@@ -17,6 +18,7 @@ public class Main {
 	private static boolean running = true;
 	private ArrayList<ClientConnection> connections = new ArrayList<>();
 	private ArrayList<Handler> handlerChain = new ArrayList<>();
+	private static ArrayList<User> users = new ArrayList<>();
 	
 	public static void main(String[] args) 
 	{
@@ -81,5 +83,9 @@ public class Main {
 		}
 	}
 	};
+	
+	public static ArrayList<User> getUsers() {
+		return users;
+	}
 	
 }

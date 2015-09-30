@@ -9,6 +9,9 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
 import start.Main;
 
 public class ClientConnection extends Thread {
@@ -37,13 +40,16 @@ public class ClientConnection extends Thread {
 			BufferedReader bR = new BufferedReader(iSR);
 			String read = "";
 			read = bR.readLine();
+			JSONParser parser = new JSONParser();
 			while (socket.isConnected() && read != null )
 		{
-				main.addtoLogicThread(read);
+				JSONObject jsonMsg = (JSONObject) parser.parse(read);
+				NetworkMessage nMessage = new NetworkMessage(this, jsonMsg);
+				main.addtoLogicThread(nMessage);
 				read = bR.readLine();
 			//TODO handler logic
 		}
-		} catch (IOException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}

@@ -10,6 +10,7 @@ import org.json.simple.parser.JSONParser;
 
 import Logic.User;
 import network.ClientConnection;
+import network.NetworkMessage;
 import network.handler.Handler;
 import network.handler.LoginHandler;
 
@@ -49,12 +50,12 @@ public class Main {
 		return connections;
 	}
 	
-	private LinkedBlockingQueue <String> readQueue = new LinkedBlockingQueue<String>();
+	private LinkedBlockingQueue <NetworkMessage> readQueue = new LinkedBlockingQueue<>();
 
-	public void addtoLogicThread(String read) {
+	public void addtoLogicThread(NetworkMessage nMessage) {
 		// TODO Auto-generated method stub
 		try {
-			readQueue.put(read);
+			readQueue.put(nMessage);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -65,14 +66,12 @@ public class Main {
 	private Thread logicThread = new Thread(){
 		@Override
 		public void run(){
-			String msg= null;
 			try {
-				JSONParser parser = new JSONParser();
 			while(running ){
-					msg = readQueue.take();
-					JSONObject jsonMsg = (JSONObject) parser.parse(msg);
+					NetworkMessage nMessage = readQueue.take();
+					System.out.println(nMessage);
 					for(Handler h : handlerChain){
-						if(h.handle(jsonMsg)){
+						if(h.handle(nMessage)){
 							break;
 						}
 					}
